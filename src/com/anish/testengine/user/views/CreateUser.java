@@ -9,12 +9,19 @@ import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.log4j.Logger;
+
+import com.anish.testengine.user.dto.UserDTO;
 import com.anish.testengine.utils.ICommonDAO;
+import com.anish.testengine.utils.ICommonUtils;
 import com.anish.testengine.utils.SQLConstants;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class CreateUser extends JFrame {
 
@@ -24,8 +31,20 @@ public class CreateUser extends JFrame {
 	PreparedStatement preparedStatement;
 	PreparedStatement preparedStatement2;
 	Choice choice = new Choice();
+	Logger logger = Logger.getLogger(CreateUser.class);
+	int uid = 0;
+	int rid = 0;
 	
-	public CreateUser() {
+	public CreateUser(UserDTO userDTO) {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				Dashboard dashboard = new Dashboard(userDTO);
+				dashboard.setVisible(true);
+				dispose();
+			}
+		});
+		logger.debug("CreateUser design started");
 		connection = null;
 		setTitle("Add User");
 		setResizable(false);
@@ -58,7 +77,7 @@ public class CreateUser extends JFrame {
 				create();
 			} catch (ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				ICommonUtils.getStackTraceString(e);
 			}
 		});
 		btnCreate.setBounds(131, 123, 114, 25);
@@ -66,29 +85,49 @@ public class CreateUser extends JFrame {
 		choice.add("Admin");
 		choice.add("Teacher");
 		choice.add("Student");
+		logger.debug("CreateUser design ended");
 	}
 	
 	private void create() throws SQLException, ClassNotFoundException {
 		try {
+			logger.debug("Creating user");
 			connection = ICommonDAO.getConnection();
 			preparedStatement = connection.prepareStatement(SQLConstants.ADD_TO_USER);
 			preparedStatement.setString(1, textName.getText());
-			preparedStatement.setString(1, choice.getSelectedItem());
-			preparedStatement2 = connection.prepareStatement(SQLConstants.GET_UID);
-			preparedStatement.setString(1, textName.getText());
-			ResultSet resultSet = preparedStatement2.executeQuery();
-			preparedStatement2 = connection.prepareStatement(SQLConstants.GET_RID);
-			preparedStatement2.setString(1, choice.getSelectedItem());
-			ResultSet resultSet2 = preparedStatement2.executeQuery();
-			preparedStatement2 = connection.prepareStatement(SQLConstants.ADD_ROLE);
-			preparedStatement2.setInt(1, resultSet.getInt(0));
-			preparedStatement2.setInt(2, resultSet2.getInt(0));
+			preparedStatement.setString(2, textName.getText() + "@" + choice.getSelectedItem().toLowerCase());
 			preparedStatement.executeUpdate();
-			preparedStatement2.executeUpdate();
+			preparedStatement2 = connection.prepareStatement(SQLConstants.GET_UID);
+			preparedStatement2.setString(1, textName.getText());
+			ResultSet resultSet = preparedStatement2.executeQuery();
+			preparedStatement2 = connection.prepareStatement(SQLConstants.ADD_ROLE);
+			while(resultSet.next()) {
+				uid = resultSet.getInt("uid");
+			}
+			if (choice.getSelectedItem().toLowerCase().equals("admin")) {
+				rid = 1;
+			}
+			else if(choice.getSelectedItem().toLowerCase().equals("teacher")) {
+				rid = 2;				
+			}
+			else {
+				rid = 3;
+			}
+			if (uid!=0 && rid!=0) {
+				preparedStatement2.setInt(1, uid);
+				preparedStatement2.setInt(2, rid);
+				preparedStatement2.executeUpdate();
+				JOptionPane.showMessageDialog(this, "User added sucessfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
 			resultSet.close();
-			resultSet2.close();
+			logger.debug("User created");
 		}
 		finally {
+			if (uid==0 || rid==0){
+				preparedStatement = connection.prepareStatement("delete from user_mst where userid = ?");
+				preparedStatement.setString(1, textName.getText());
+				preparedStatement.executeUpdate();
+			}
 			if (preparedStatement!=null) {
 				preparedStatement.close();
 			}
@@ -98,6 +137,7 @@ public class CreateUser extends JFrame {
 			if (connection!=null) {
 				connection.close();
 			}
+			logger.debug("connections closed");
 		}
 	}
 }

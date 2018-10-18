@@ -1,7 +1,5 @@
 package com.anish.testengine.user.views;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -141,6 +139,7 @@ public class TakeTest {
 	
 	private void loadTest() throws SQLException, ClassNotFoundException {
 		try {
+			logger.debug("loading test");
 			questions = new ArrayList<>();
 			connection = ICommonDAO.getConnection();
 			preparedStatement = connection.prepareStatement(SQLConstants.GET_QUESTIONS);
@@ -161,6 +160,7 @@ public class TakeTest {
 				questionDTO.setOptions(options);
 				questions.add(questionDTO);
 			}
+			logger.debug("test loaded");
 		}
 		finally {
 			if (resultSet!=null) {
@@ -172,6 +172,7 @@ public class TakeTest {
 			if (connection!=null) {
 				connection.close();
 			}
+			logger.debug("connections closed");
 		}
 	}
 	
@@ -250,6 +251,7 @@ public class TakeTest {
 	}
 	
 	private void calculateScore() throws ClassNotFoundException, SQLException {
+		logger.debug("calculating score");
 		btnNext.setEnabled(false);
 		btnPrevious.setEnabled(false);
 		btnClear.setEnabled(false);
@@ -275,6 +277,7 @@ public class TakeTest {
 	
 	private void uploadScore() throws ClassNotFoundException, SQLException {
 		try {
+			logger.debug("uploading score");
 			connection = ICommonDAO.getConnection();
 			preparedStatement = connection.prepareStatement(SQLConstants.OUTPUT_ANSWER);
 			preparedStatement.setString(1, testCode);
@@ -284,6 +287,7 @@ public class TakeTest {
 			preparedStatement.setInt(5, correct);
 			preparedStatement.setInt(6, wrong);
 			preparedStatement.executeUpdate();
+			logger.debug("score uploaded");
 			}
 	
 		finally {
@@ -296,6 +300,7 @@ public class TakeTest {
 			if (connection!=null) {
 				connection.close();
 			}
+			logger.debug("connections closed");
 		}
 	}
 }

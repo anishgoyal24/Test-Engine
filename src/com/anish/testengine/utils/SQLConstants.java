@@ -19,6 +19,8 @@ public interface SQLConstants {
 	String OUTPUT_ANSWER = "insert into user_test_mapping values(?,?,?,?,?,?)";
 	String ADD_TO_USER = "insert into user_mst(userid, password) values(?,?)";
 	String ADD_ROLE = "insert into user_role_mapping values(?,?)";
-	String GET_UID = "select * from user_mst where userid = ?";
-	String GET_RID = "select * from role_mst where roleid = ?";
+	String GET_UID = "select uid from user_mst where userid = ?";
+	String GET_RID = "select roleid from role_mst where rolename = ?";
+	String DELETE_USER = "update user_mst set status = 'n' where userid = ?";
+	String CHANGE_PASSWORD = "update user_mst set password = ? where userid = ?";
 }

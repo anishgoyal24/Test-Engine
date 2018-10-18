@@ -1,13 +1,15 @@
 package com.anish.testengine.user.views;
 
 import java.awt.Choice;
-import java.awt.EventQueue;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -18,11 +20,8 @@ import com.anish.testengine.user.dto.UserDTO;
 import com.anish.testengine.utils.ICommonDAO;
 import com.anish.testengine.utils.ICommonUtils;
 import com.anish.testengine.utils.SQLConstants;
-import javax.swing.JLabel;
-import java.awt.Font;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class SelectTest extends JFrame {
 
@@ -59,6 +58,7 @@ public class SelectTest extends JFrame {
 					choice.add(resultSet.getString("test_code"));
 				}
 			}
+			logger.debug("success");
 		}
 		finally {
 			if (resultSet!=null) {
@@ -78,6 +78,7 @@ public class SelectTest extends JFrame {
 
 
 	public SelectTest(UserDTO userDTO) {
+		logger.debug("SelectTest design started");
 		setResizable(false);
 		setTitle("Select test");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -100,6 +101,7 @@ public class SelectTest extends JFrame {
 		btnStartTest.addActionListener(arg0->{
 			try {
 				TakeTest takeTest = new TakeTest(choice.getSelectedItem(), userDTO);
+				dispose();
 			} catch (ClassNotFoundException e) {
 				logger.error(ICommonUtils.getStackTraceString(e));
 				JOptionPane.showMessageDialog(this, "Some error occurred", "Error", JOptionPane.ERROR_MESSAGE);
@@ -107,7 +109,6 @@ public class SelectTest extends JFrame {
 				logger.error(ICommonUtils.getStackTraceString(e));
 				JOptionPane.showMessageDialog(this, "Some error occurred", "Error", JOptionPane.ERROR_MESSAGE);
 			}
-			dispose();
 		});
 		btnStartTest.setBounds(170, 78, 114, 25);
 		contentPane.add(btnStartTest);
@@ -121,5 +122,6 @@ public class SelectTest extends JFrame {
 			logger.error(ICommonUtils.getStackTraceString(e));
 			JOptionPane.showMessageDialog(this, "Error in retrieving test list", "Error", JOptionPane.ERROR_MESSAGE);
 		}
+		logger.debug("SelectTest design ended");
 	}
 }

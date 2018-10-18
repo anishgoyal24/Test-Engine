@@ -19,6 +19,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.MenuItem;
 import java.awt.Window.Type;
 
 public class Dashboard extends JFrame {
@@ -28,18 +29,6 @@ public class Dashboard extends JFrame {
 
 	public Dashboard(UserDTO userDTO) {
 		setResizable(false);
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				try {
-					LoginView window = new LoginView();
-					window.frame.setVisible(true);
-				} catch (Exception exception) {
-					ICommonUtils.getStackTraceString(exception);
-				}
-				dispose();
-			}
-		});
 	    logger.debug("Dashboard design started");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -82,7 +71,14 @@ public class Dashboard extends JFrame {
 				}
 		});
 			file.add(menuItem);
-		} 
+		}
+		JMenuItem menuItem = new JMenuItem("Logout");
+		menuItem.addActionListener((argo)->{
+			LoginView loginView = new LoginView();
+			loginView.frame.setVisible(true);
+			this.dispose();
+		});
+		file.add(menuItem);
 		logger.debug("Dashboard design ended");
 	}
 }
