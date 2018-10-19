@@ -68,7 +68,7 @@ public class TakeTest {
 		
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 637, 444);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		optionA.setBounds(86, 199, 144, 23);

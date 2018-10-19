@@ -1,5 +1,7 @@
 package com.anish.testengine.user.views;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -16,8 +18,6 @@ import com.anish.testengine.user.dto.UserDTO;
 import com.anish.testengine.utils.ICommonDAO;
 import com.anish.testengine.utils.ICommonUtils;
 import com.anish.testengine.utils.SQLConstants;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class ChangePassword extends JFrame {
 
@@ -27,19 +27,22 @@ public class ChangePassword extends JFrame {
 	private JTextField textRePassword;
 	private Connection connection;
 	private PreparedStatement preparedStatement;
+	Boolean flag = false;
 
 	public ChangePassword(UserDTO userDTO) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
+				if (flag==false) {
 				Dashboard dashboard = new Dashboard(userDTO);
 				dashboard.setVisible(true);
 				dispose();
+				}
 			}
 		});
 		setTitle("Change Password");
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 186);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -87,7 +90,12 @@ public class ChangePassword extends JFrame {
 			preparedStatement.setString(1, textPassword.getText());
 			preparedStatement.setString(2, userDTO.getUsername());
 			preparedStatement.executeUpdate();
-		}
+			JOptionPane.showMessageDialog(this, "Successfully changed Password", "Success", JOptionPane.INFORMATION_MESSAGE);
+			Dashboard dashboard = new Dashboard(userDTO);
+			dashboard.setVisible(true);
+			flag = true;
+			dispose();
+			}
 		finally {
 			if (preparedStatement!=null) {
 				preparedStatement.close();

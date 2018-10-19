@@ -23,4 +23,5 @@ public interface SQLConstants {
 	String GET_RID = "select roleid from role_mst where rolename = ?";
 	String DELETE_USER = "update user_mst set status = 'n' where userid = ?";
 	String CHANGE_PASSWORD = "update user_mst set password = ? where userid = ?";
+	String STUDENT_RESULT = "select * from user_test_mapping where userid=?";
 }
